@@ -11,7 +11,7 @@ import path from 'path';
 
 const app: Application = express();
 
-// parsers
+//parsers
 app.use(express.json());
 
 // Handle double slashes in URLs
@@ -23,28 +23,39 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS configuration - Allow specific origins
-const allowedOrigins = [
-  'https://qc-client-beige.vercel.app',
-  'http://localhost:3000',
-  'http://localhost:5000',
-  'https://api-qc-server-v1.vercel.app'
-];
+// Handle OPTIONS requests
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+  );
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+  );
+  res.status(200).end();
+});
 
+// Fallback CORS headers for all responses
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+  );
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+  );
+  next();
+});
+
+// CORS configuration - Allow all origins
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        return callback(null, true);
-      } else {
-        console.log('CORS blocked origin:', origin);
-        return callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
+    origin: '*', // Allow all origins
+    credentials: false, // Set to false when using wildcard origin
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
@@ -56,10 +67,11 @@ app.use(
       'Access-Control-Request-Headers',
     ],
     optionsSuccessStatus: 200,
-  })
+  }),
 );
 
 // application routes
+
 app.get('/', (req, res) => {
   const baseUrl = `${req.protocol}://${req.get('host')}`;
 
@@ -101,7 +113,7 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.use(globalErrorHandler);
 
-// Not Found
+//Not Found
 app.use(notFound);
 
 export default app;
