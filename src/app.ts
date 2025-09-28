@@ -25,21 +25,66 @@ app.use((req, res, next) => {
 
 // Handle OPTIONS requests
 app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+  );
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+  );
   res.status(200).end();
 });
 
-// CORS configuration
+// Fallback CORS headers for all responses
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+  );
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+  );
+  next();
+});
+
+// CORS configuration - More permissive for development
 app.use(
   cors({
-    origin: [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'https://quiz-contest-fr.vercel.app',
-      'https://quiz-contest-fr-git-main.vercel.app',
-      'https://api-qc-server-v1.vercel.app',
-      'https://api-qc-server-v1.vercel.app/api/v1',
-      'https://api-qc-server-v1.vercel.app/api',
-    ],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      const allowedOrigins = [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:3002',
+        'https://quiz-contest-fr.vercel.app',
+        'https://quiz-contest-fr-git-main.vercel.app',
+        'https://api-qc-server-v1.vercel.app',
+        'https://vercel.app',
+        'https://*.vercel.app',
+      ];
+
+      // Check if origin is allowed
+      const isAllowed = allowedOrigins.some((allowedOrigin) => {
+        if (allowedOrigin.includes('*')) {
+          const pattern = allowedOrigin.replace('*', '.*');
+          return new RegExp(pattern).test(origin);
+        }
+        return allowedOrigin === origin;
+      });
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        console.log('CORS blocked origin:', origin);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: [
@@ -47,6 +92,9 @@ app.use(
       'Authorization',
       'X-Requested-With',
       'Accept',
+      'Origin',
+      'Access-Control-Request-Method',
+      'Access-Control-Request-Headers',
     ],
     optionsSuccessStatus: 200,
   }),
