@@ -30,8 +30,41 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS configuration - Allow specific origins
-allowedOrigins
+// CORS configuration
+const allowedOrigins = [
+  'https://qc-client-beige.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'https://api-qc-server-v1.vercel.app'
+];
+
+// Configure CORS
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'Access-Control-Request-Method',
+    'Access-Control-Request-Headers',
+  ],
+  optionsSuccessStatus: 200,
+}));
+
 // Basic routes
 app.get('/', (req, res) => {
   const baseUrl = `${req.protocol}://${req.get('host')}`;
@@ -57,16 +90,6 @@ app.get('/', (req, res) => {
       'GET /api/v1/users': 'Users endpoint',
       'GET /api/v1/events': 'Events endpoint',
     },
-  });
-});
-
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    project: 'Quiz Contest Backend',
-    technology: 'TypeScript + Express',
-    status: 'healthy',
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
   });
 });
 
