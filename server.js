@@ -30,39 +30,28 @@ app.use((req, res, next) => {
   next();
 });
 
-// Handle OPTIONS requests
-app.options('*', (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Methods',
-    'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-  );
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Content-Type, Authorization, X-Requested-With, Accept, Origin',
-  );
-  res.status(200).end();
-});
+// CORS configuration - Allow specific origins
+const allowedOrigins = [
+  'https://qc-client-beige.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'https://api-qc-server-v1.vercel.app',
+];
 
-// Fallback CORS headers for all responses
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Methods',
-    'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-  );
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Content-Type, Authorization, X-Requested-With, Accept, Origin',
-  );
-  next();
-});
-
-// CORS configuration - Allow all origins
 app.use(
   cors({
-    origin: '*', // Allow all origins
-    credentials: false, // Set to false when using wildcard origin
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        return callback(null, true);
+      } else {
+        console.log('CORS blocked origin:', origin);
+        return callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
@@ -142,6 +131,14 @@ app.get('/api/v1/users', (req, res) => {
   });
 });
 
+app.get('/api/v1/events', (req, res) => {
+  res.status(200).json({
+    message:
+      'Events endpoint - This would return events in a real implementation',
+    data: [],
+    timestamp: new Date().toISOString(),
+  });
+});
 
 // 404 handler
 app.use('*', (req, res) => {
