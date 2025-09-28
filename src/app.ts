@@ -19,16 +19,36 @@ app.use(cors({ origin: '*' }));
 // application routes
 
 app.get('/', (req, res) => {
+  const baseUrl = `${req.protocol}://${req.get('host')}`;
+
   res.status(200).json({
-    message: 'Quiz Contest API',
+    project: 'Quiz Contest Backend',
+    technology: 'Node.js + TypeScript + Express',
+    message: 'Quiz Contest API Server',
     status: 'running',
+    version: '1.0.0',
     timestamp: new Date().toISOString(),
+    baseUrl: baseUrl,
+    endpoints: {
+      health: `${baseUrl}/health`,
+      api: `${baseUrl}/api/v1`,
+      uploads: `${baseUrl}/uploads`,
+    },
+    availableRoutes: {
+      'GET /': 'API Information (this page)',
+      'GET /health': 'Health check endpoint',
+      'GET /api/v1/*': 'Main API endpoints',
+      'GET /uploads/*': 'Static file uploads',
+    },
   });
 });
 
 app.get('/health', (req, res) => {
   res.status(200).json({
+    project: 'Quiz Contest Backend',
+    technology: 'TypeScript + Express',
     status: 'healthy',
+    uptime: process.uptime(),
     timestamp: new Date().toISOString(),
   });
 });
