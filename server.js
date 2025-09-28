@@ -30,40 +30,54 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS configuration
-const allowedOrigins = [
-  'https://qc-client-beige.vercel.app',
-  'http://localhost:3000',
-  'http://localhost:5000',
-  'https://api-qc-server-v1.vercel.app'
-];
+// Handle OPTIONS requests first
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+  );
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+  );
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.status(200).end();
+});
 
-// Configure CORS
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      return callback(null, true);
-    } else {
-      console.log('CORS blocked origin:', origin);
-      return callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'X-Requested-With',
-    'Accept',
-    'Origin',
-    'Access-Control-Request-Method',
-    'Access-Control-Request-Headers',
-  ],
-  optionsSuccessStatus: 200,
-}));
+// Fallback CORS headers for all responses
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+  );
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+  );
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
+
+// CORS configuration - Allow all origins for now
+app.use(
+  cors({
+    origin: '*',
+    credentials: false,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+      'Access-Control-Request-Method',
+      'Access-Control-Request-Headers',
+    ],
+    optionsSuccessStatus: 200,
+  }),
+);
 
 // Basic routes
 app.get('/', (req, res) => {
@@ -89,6 +103,9 @@ app.get('/', (req, res) => {
       'GET /api/v1/status': 'API status with database info',
       'GET /api/v1/users': 'Users endpoint',
       'GET /api/v1/events': 'Events endpoint',
+      'GET /api/v1/auth/check-user': 'Check user authentication',
+      'POST /api/v1/auth/login': 'User login',
+      'POST /api/v1/auth/register': 'User registration',
     },
   });
 });
@@ -129,6 +146,87 @@ app.get('/api/v1/events', (req, res) => {
   });
 });
 
+// Auth endpoints
+app.get('/api/v1/auth/check-user', (req, res) => {
+  res.status(200).json({
+    message: 'Check user endpoint - This would check user authentication',
+    data: { authenticated: false },
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.post('/api/v1/auth/login', (req, res) => {
+  res.status(200).json({
+    message: 'Login endpoint - This would handle user login',
+    data: { success: true, token: 'dummy-token' },
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.post('/api/v1/auth/register', (req, res) => {
+  res.status(200).json({
+    message: 'Register endpoint - This would handle user registration',
+    data: { success: true, user: { id: 1, email: 'user@example.com' } },
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Additional endpoints for quiz contest
+app.get('/api/v1/banner', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message: 'Banner endpoint - This would return banner data',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/v1/offers', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message: 'Offers endpoint - This would return offers data',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/v1/quiz-data', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message: 'Quiz data endpoint - This would return quiz data',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/v1/judge', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message: 'Judge endpoint - This would return judge data',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/v1/time-instruction', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message:
+      'Time instruction endpoint - This would return time instruction data',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/v1/faq', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message: 'FAQ endpoint - This would return FAQ data',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({
@@ -143,6 +241,15 @@ app.use('*', (req, res) => {
       'GET /api/v1/status': 'API status with database info',
       'GET /api/v1/users': 'Users endpoint',
       'GET /api/v1/events': 'Events endpoint',
+      'GET /api/v1/auth/check-user': 'Check user authentication',
+      'POST /api/v1/auth/login': 'User login',
+      'POST /api/v1/auth/register': 'User registration',
+      'GET /api/v1/banner': 'Banner data',
+      'GET /api/v1/offers': 'Offers data',
+      'GET /api/v1/quiz-data': 'Quiz data',
+      'GET /api/v1/judge': 'Judge data',
+      'GET /api/v1/time-instruction': 'Time instruction data',
+      'GET /api/v1/faq': 'FAQ data',
     },
     timestamp: new Date().toISOString(),
   });
