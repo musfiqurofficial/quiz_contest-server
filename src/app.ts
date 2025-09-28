@@ -37,6 +37,8 @@ app.use(
       'https://quiz-contest-fr.vercel.app',
       'https://quiz-contest-fr-git-main.vercel.app',
       'https://api-qc-server-v1.vercel.app',
+      'https://api-qc-server-v1.vercel.app/api/v1',
+      'https://api-qc-server-v1.vercel.app/api',
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
