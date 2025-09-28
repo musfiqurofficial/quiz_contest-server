@@ -51,41 +51,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS configuration - More permissive for development
+// CORS configuration - Allow all origins
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-
-      const allowedOrigins = [
-        'http://localhost:3000',
-        'http://localhost:3001',
-        'http://localhost:3002',
-        'https://quiz-contest-fr.vercel.app',
-        'https://quiz-contest-fr-git-main.vercel.app',
-        'https://api-qc-server-v1.vercel.app',
-        'https://vercel.app',
-        'https://*.vercel.app',
-      ];
-
-      // Check if origin is allowed
-      const isAllowed = allowedOrigins.some((allowedOrigin) => {
-        if (allowedOrigin.includes('*')) {
-          const pattern = allowedOrigin.replace('*', '.*');
-          return new RegExp(pattern).test(origin);
-        }
-        return allowedOrigin === origin;
-      });
-
-      if (isAllowed) {
-        callback(null, true);
-      } else {
-        console.log('CORS blocked origin:', origin);
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
+    origin: '*', // Allow all origins
+    credentials: false, // Set to false when using wildcard origin
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
