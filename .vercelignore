@@ -1,0 +1,15 @@
+node_modules
+src
+*.log
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+uploads
+*.md
+.git
+.gitignore
+.eslintignore
+.eslintrc*
+.prettierrc*
+tsconfig.json
