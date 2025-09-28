@@ -14,7 +14,41 @@ const app: Application = express();
 //parsers
 app.use(express.json());
 
-app.use(cors({ origin: '*' }));
+// Handle double slashes in URLs
+app.use((req, res, next) => {
+  if (req.url.includes('//')) {
+    req.url = req.url.replace(/\/+/g, '/');
+    return res.redirect(301, req.url);
+  }
+  next();
+});
+
+// Handle OPTIONS requests
+app.options('*', (req, res) => {
+  res.status(200).end();
+});
+
+// CORS configuration
+app.use(
+  cors({
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://quiz-contest-fr.vercel.app',
+      'https://quiz-contest-fr-git-main.vercel.app',
+      'https://api-qc-server-v1.vercel.app',
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+    ],
+    optionsSuccessStatus: 200,
+  }),
+);
 
 // application routes
 
