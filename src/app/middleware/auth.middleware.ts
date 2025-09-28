@@ -5,7 +5,7 @@ import config from '../config';
 export interface AuthRequest extends Request {
 user?: { userId: string; role: string };
 }
-export const authenticate = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const authenticate = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
 try {
 const token = req.header('Authorization')?.replace('Bearer ', '');
 
@@ -44,8 +44,6 @@ res.status(401).json({ success: false, message: 'Invalid token' });
 export const requireRole = (roles: string[]) => {
 return async (req: AuthRequest, res: Response, next: NextFunction) => {
 try {
-await authenticate(req, res, () => {});
-
 if (!req.user) {
 return res.status(401).json({ success: false, message: 'Authentication required' });
 }

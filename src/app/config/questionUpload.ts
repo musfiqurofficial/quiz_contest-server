@@ -1,4 +1,4 @@
-import multer from 'multer';
+import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { Request } from 'express';
@@ -21,7 +21,7 @@ if (!fs.existsSync(questionImagesDir)) {
 
 // Storage configuration for question files
 const questionFileStorage = multer.diskStorage({
-  destination: (req: Request, file: multer.File, cb) => {
+  destination: (req: Request, file: Express.Multer.File, cb) => {
     // Determine destination based on file type
     if (file.mimetype.startsWith('image/')) {
       cb(null, questionImagesDir);
@@ -29,7 +29,7 @@ const questionFileStorage = multer.diskStorage({
       cb(null, questionFilesDir);
     }
   },
-  filename: (req: Request, file: multer.File, cb) => {
+  filename: (req: Request, file: Express.Multer.File, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const extension = path.extname(file.originalname);
     const prefix = file.mimetype.startsWith('image/') ? 'img-' : 'file-';
@@ -40,7 +40,7 @@ const questionFileStorage = multer.diskStorage({
 // File filter for question uploads
 const questionFileFilter = (
   req: Request,
-  file: multer.File,
+  file: Express.Multer.File,
   cb: multer.FileFilterCallback,
 ) => {
   // Allow images
@@ -81,7 +81,7 @@ export const questionImageUpload = multer({
   storage: questionFileStorage,
   fileFilter: (
     req: Request,
-    file: multer.File,
+    file: Express.Multer.File,
     cb: multer.FileFilterCallback,
   ) => {
     if (file.mimetype.startsWith('image/')) {
@@ -115,7 +115,7 @@ export const questionMixedUpload = multer({
 });
 
 // Helper function to get file info for database storage
-export const getFileInfo = (file: multer.File) => {
+export const getFileInfo = (file: Express.Multer.File) => {
   // Build a web-accessible path under /uploads instead of absolute filesystem path
   const isImage = file.mimetype.startsWith('image/');
   const urlPath = isImage

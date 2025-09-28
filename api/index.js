@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const path = require('path');
 
 const app = express();
 
@@ -141,11 +142,111 @@ app.get('/api/v1/events', (req, res) => {
   });
 });
 
-// Check user endpoint
-app.get('/api/v1/check-user', (req, res) => {
+// Auth endpoints
+app.get('/api/v1/auth/check-user', (req, res) => {
   res.status(200).json({
     message: 'Check user endpoint - This would check user authentication',
     data: { authenticated: false },
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.post('/api/v1/auth/login', (req, res) => {
+  res.status(200).json({
+    message: 'Login endpoint - This would handle user login',
+    data: { success: true, token: 'dummy-token' },
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.post('/api/v1/auth/register', (req, res) => {
+  res.status(200).json({
+    message: 'Register endpoint - This would handle user registration',
+    data: { success: true, user: { id: 1, email: 'user@example.com' } },
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Additional endpoints for quiz contest
+app.get('/api/v1/banner', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message: 'Banner endpoint - This would return banner data',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/v1/offers', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message: 'Offers endpoint - This would return offers data',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/v1/quiz-data', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message: 'Quiz data endpoint - This would return quiz data',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/v1/judge', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message: 'Judge endpoint - This would return judge data',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/v1/time-instruction', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message:
+      'Time instruction endpoint - This would return time instruction data',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/v1/faq', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message: 'FAQ endpoint - This would return FAQ data',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Quiz endpoints
+app.get('/api/v1/quizzes', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message: 'Quizzes endpoint - This would return quiz data',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/v1/questions', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message: 'Questions endpoint - This would return question data',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/v1/participations', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: [],
+    message: 'Participations endpoint - This would return participation data',
     timestamp: new Date().toISOString(),
   });
 });
@@ -164,7 +265,18 @@ app.use('*', (req, res) => {
       'GET /api/v1/status': 'API status with database info',
       'GET /api/v1/users': 'Users endpoint',
       'GET /api/v1/events': 'Events endpoint',
-      'GET /api/v1/check-user': 'Check user endpoint',
+      'GET /api/v1/auth/check-user': 'Check user authentication',
+      'POST /api/v1/auth/login': 'User login',
+      'POST /api/v1/auth/register': 'User registration',
+      'GET /api/v1/banner': 'Banner data',
+      'GET /api/v1/offers': 'Offers data',
+      'GET /api/v1/quiz-data': 'Quiz data',
+      'GET /api/v1/judge': 'Judge data',
+      'GET /api/v1/time-instruction': 'Time instruction data',
+      'GET /api/v1/faq': 'FAQ data',
+      'GET /api/v1/quizzes': 'Quizzes data',
+      'GET /api/v1/questions': 'Questions data',
+      'GET /api/v1/participations': 'Participations data',
     },
     timestamp: new Date().toISOString(),
   });

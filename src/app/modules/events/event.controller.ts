@@ -6,7 +6,7 @@ import { Event } from './event.model';
 export const createEvent = async (req: Request, res: Response) => {
   try {
     const event = await Event.create(req.body);
-    await event.updateStatus();
+    // await event.updateStatus();
     res.status(201).json({ success: true, data: event });
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message });
@@ -53,9 +53,9 @@ export const updateEvent = async (req: Request, res: Response) => {
         .json({ success: false, message: 'Event not found' });
 
     Object.assign(event, req.body);
-    if (typeof event.updateStatus === 'function') {
-      await event.updateStatus();
-    }
+    // if (typeof event.updateStatus === 'function') {
+    //   await event.updateStatus();
+    // }
     await event.save();
 
     res.json({ success: true, data: event });
