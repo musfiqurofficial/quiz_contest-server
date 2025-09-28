@@ -20,7 +20,16 @@ app.use(cors({ origin: '*' }));
 
 app.get('/', (req, res) => {
   res.status(200).json({
-    message: 'Quiz Contest',
+    message: 'Quiz Contest API',
+    status: 'running',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
   });
 });
 
