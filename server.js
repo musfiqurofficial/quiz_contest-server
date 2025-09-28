@@ -142,14 +142,6 @@ app.get('/api/v1/users', (req, res) => {
   });
 });
 
-app.get('/api/v1/events', (req, res) => {
-  res.status(200).json({
-    message:
-      'Events endpoint - This would return events in a real implementation',
-    data: [],
-    timestamp: new Date().toISOString(),
-  });
-});
 
 // 404 handler
 app.use('*', (req, res) => {
