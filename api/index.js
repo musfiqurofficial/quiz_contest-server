@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const path = require('path');
 
 const app = express();
 
@@ -48,7 +47,7 @@ app.use(
       if (allowedOrigins.indexOf(origin) !== -1) {
         return callback(null, true);
       } else {
-        console.log('CORS blocked origin:', origin);
+        // console.log('CORS blocked origin:', origin);
         return callback(new Error('Not allowed by CORS'));
       }
     },
@@ -72,7 +71,7 @@ app.get('/', (req, res) => {
   const baseUrl = `${req.protocol}://${req.get('host')}`;
 
   res.status(200).json({
-    project: 'Quiz Contest Backend',
+    project: 'Quiz Contest Testing API',
     technology: 'Node.js + Express',
     message: 'Quiz Contest API Server',
     status: 'running',
@@ -81,16 +80,16 @@ app.get('/', (req, res) => {
     baseUrl: baseUrl,
     endpoints: {
       health: `${baseUrl}/health`,
-      api: `${baseUrl}`,
+      api: `${baseUrl}/api/v1`,
       uploads: `${baseUrl}/uploads`,
     },
     availableRoutes: {
       'GET /': 'API Information (this page)',
       'GET /health': 'Health check endpoint',
-      'GET /test': 'Test API endpoint',
-      'GET /status': 'API status with database info',
-      'GET /users': 'Users endpoint',
-      'GET /events': 'Events endpoint',
+      'GET /api/v1/test': 'Test API endpoint',
+      'GET /api/v1/status': 'API status with database info',
+      'GET /api/v1/users': 'Users endpoint',
+      'GET /api/v1/events': 'Events endpoint',
     },
   });
 });
@@ -106,14 +105,14 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-app.get('/test', (req, res) => {
+app.get('/api/v1/test', (req, res) => {
   res.status(200).json({
     message: 'API is working',
     timestamp: new Date().toISOString(),
   });
 });
 
-app.get('/status', (req, res) => {
+app.get('/api/v1/status', (req, res) => {
   res.status(200).json({
     status: 'API is running',
     database:
@@ -123,7 +122,7 @@ app.get('/status', (req, res) => {
 });
 
 // Users endpoint
-app.get('/users', (req, res) => {
+app.get('/api/v1/users', (req, res) => {
   res.status(200).json({
     message:
       'Users endpoint - This would return users in a real implementation',
@@ -133,7 +132,7 @@ app.get('/users', (req, res) => {
 });
 
 // Events endpoint
-app.get('/events', (req, res) => {
+app.get('/api/v1/events', (req, res) => {
   res.status(200).json({
     message:
       'Events endpoint - This would return events in a real implementation',
@@ -142,111 +141,11 @@ app.get('/events', (req, res) => {
   });
 });
 
-// Auth endpoints
-app.get('/auth/check-user', (req, res) => {
+// Check user endpoint
+app.get('/api/v1/check-user', (req, res) => {
   res.status(200).json({
     message: 'Check user endpoint - This would check user authentication',
     data: { authenticated: false },
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.post('/auth/login', (req, res) => {
-  res.status(200).json({
-    message: 'Login endpoint - This would handle user login',
-    data: { success: true, token: 'dummy-token' },
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.post('/auth/register', (req, res) => {
-  res.status(200).json({
-    message: 'Register endpoint - This would handle user registration',
-    data: { success: true, user: { id: 1, email: 'user@example.com' } },
-    timestamp: new Date().toISOString(),
-  });
-});
-
-// Additional endpoints for quiz contest
-app.get('/banner', (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: [],
-    message: 'Banner endpoint - This would return banner data',
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.get('/offers', (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: [],
-    message: 'Offers endpoint - This would return offers data',
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.get('/quiz-data', (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: [],
-    message: 'Quiz data endpoint - This would return quiz data',
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.get('/judge', (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: [],
-    message: 'Judge endpoint - This would return judge data',
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.get('/time-instruction', (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: [],
-    message:
-      'Time instruction endpoint - This would return time instruction data',
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.get('/faq', (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: [],
-    message: 'FAQ endpoint - This would return FAQ data',
-    timestamp: new Date().toISOString(),
-  });
-});
-
-// Quiz endpoints
-app.get('/quizzes', (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: [],
-    message: 'Quizzes endpoint - This would return quiz data',
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.get('/questions', (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: [],
-    message: 'Questions endpoint - This would return question data',
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.get('/participations', (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: [],
-    message: 'Participations endpoint - This would return participation data',
     timestamp: new Date().toISOString(),
   });
 });
@@ -261,22 +160,11 @@ app.use('*', (req, res) => {
     availableEndpoints: {
       'GET /': 'API Information',
       'GET /health': 'Health check',
-      'GET /test': 'Test API endpoint',
-      'GET /status': 'API status with database info',
-      'GET /users': 'Users endpoint',
-      'GET /events': 'Events endpoint',
-      'GET /auth/check-user': 'Check user authentication',
-      'POST /auth/login': 'User login',
-      'POST /auth/register': 'User registration',
-      'GET /banner': 'Banner data',
-      'GET /offers': 'Offers data',
-      'GET /quiz-data': 'Quiz data',
-      'GET /judge': 'Judge data',
-      'GET /time-instruction': 'Time instruction data',
-      'GET /faq': 'FAQ data',
-      'GET /quizzes': 'Quizzes data',
-      'GET /questions': 'Questions data',
-      'GET /participations': 'Participations data',
+      'GET /api/v1/test': 'Test API endpoint',
+      'GET /api/v1/status': 'API status with database info',
+      'GET /api/v1/users': 'Users endpoint',
+      'GET /api/v1/events': 'Events endpoint',
+      'GET /api/v1/check-user': 'Check user endpoint',
     },
     timestamp: new Date().toISOString(),
   });
