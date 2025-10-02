@@ -16,16 +16,18 @@ if (config.database_url) {
   console.log('No DATABASE_URL provided, skipping database connection');
 }
 
-// Start server
-const PORT = config.port || 5000;
-try {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port ${PORT}`);
-    console.log(`📱 API URL: http://localhost:${PORT}`);
-    console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
-  });
-} catch (error) {
-  console.error('Failed to start server:', error);
+// Start server (skip in Vercel production)
+if (!process.env.VERCEL) {
+  const PORT = config.port || 5000;
+  try {
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is running on port ${PORT}`);
+      console.log(`📱 API URL: http://localhost:${PORT}`);
+      console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+  }
 }
 
 // Export the app for Vercel

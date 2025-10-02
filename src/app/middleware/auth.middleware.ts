@@ -2,21 +2,24 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../modules/User/user.model';
 import config from '../config';
+
 export interface AuthRequest extends Request {
   user?: { userId: string; role: string };
 }
+
 export const authenticate = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
     if (!token) {
-      return res
+      res
         .status(401)
         .json({ success: false, message: 'Access denied. No token provided.' });
+      return;
     }
     // Verify token
     const decoded = jwt.verify(token, config.jwt_secret as string) as {
@@ -26,7 +29,8 @@ export const authenticate = async (
     // Check if token exists in user's tokens array
     const user = await User.findOne({ _id: decoded.userId, tokens: token });
     if (!user) {
-      return res.status(401).json({ success: false, message: 'Invalid token' });
+      res.status(401).json({ success: false, message: 'Invalid token' });
+      return;
     }
     req.user = { userId: decoded.userId, role: user.role };
     next();
@@ -41,7 +45,8 @@ export const authenticate = async (
       } catch (dbError) {
         console.error('Error removing expired token:', dbError);
       }
-      return res.status(401).json({ success: false, message: 'Token expired' });
+      res.status(401).json({ success: false, message: 'Token expired' });
+      return;
     }
     res.status(401).json({ success: false, message: 'Invalid token' });
   }
@@ -50,14 +55,16 @@ export const requireRole = (roles: string[]) => {
   return async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       if (!req.user) {
-        return res
+        res
           .status(401)
           .json({ success: false, message: 'Authentication required' });
+        return;
       }
       if (!roles.includes(req.user.role)) {
-        return res
+        res
           .status(403)
           .json({ success: false, message: 'Insufficient permissions' });
+        return;
       }
       next();
     } catch (error) {

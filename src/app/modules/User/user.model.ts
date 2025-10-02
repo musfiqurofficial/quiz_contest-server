@@ -29,6 +29,7 @@ export interface IUser extends Document {
   contact: string;
   contactType: 'phone' | 'email';
   parentContact?: string;
+  whatsappNumber?: string;
 
   // Health
   bloodGroup?: string;
@@ -92,6 +93,7 @@ const UserSchema = new Schema<IUser>(
     contact: { type: String, required: true, unique: true },
     contactType: { type: String, enum: ['phone', 'email'], required: true },
     parentContact: { type: String },
+    whatsappNumber: { type: String },
 
     // Health
     bloodGroup: { type: String },

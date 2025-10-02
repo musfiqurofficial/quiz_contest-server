@@ -33,6 +33,7 @@ export const registerUser = async (req: Request, res: Response) => {
       contact,
       contactType,
       parentContact,
+      whatsappNumber,
       bloodGroup,
       specialNeeds,
       hasSmartphone,
@@ -78,6 +79,7 @@ export const registerUser = async (req: Request, res: Response) => {
       contact,
       contactType,
       parentContact,
+      whatsappNumber,
       bloodGroup,
       specialNeeds,
       hasSmartphone: hasSmartphone === 'true',
@@ -241,6 +243,93 @@ export const getUserProfile = async (req: AuthRequest, res: Response) => {
   }
 };
 // Update User Profile
+// Get All Users for Admin
+export const getAllUsersForAdmin = async (req: AuthRequest, res: Response) => {
+  try {
+    const users = await User.find({ role: 'student' })
+      .select('-password -tokens')
+      .sort({ createdAt: -1 });
+
+    // Add full URL for profile images
+    const usersWithImages = users.map((user) => {
+      const userData = user.toObject();
+      if (userData.profileImage) {
+        userData.profileImage = `${req.protocol}://${req.get('host')}${userData.profileImage}`;
+      }
+      return userData;
+    });
+
+    res.status(200).json({
+      success: true,
+      data: usersWithImages,
+    });
+  } catch (error) {
+    console.error('Get users error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// Get User Details with Participations
+export const getUserDetailsWithParticipations = async (
+  req: AuthRequest,
+  res: Response,
+) => {
+  try {
+    const { userId } = req.params;
+
+    // Get user details
+    const user = await User.findById(userId).select('-password -tokens');
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'User not found' });
+    }
+
+    // Get user's participations with populated data
+    const participations = await mongoose.connection
+      .collection('participations')
+      .aggregate([
+        { $match: { studentId: new mongoose.Types.ObjectId(userId) } },
+        {
+          $lookup: {
+            from: 'quizzes',
+            localField: 'quizId',
+            foreignField: '_id',
+            as: 'quiz',
+          },
+        },
+        {
+          $lookup: {
+            from: 'events',
+            localField: 'quiz.eventId',
+            foreignField: '_id',
+            as: 'event',
+          },
+        },
+        { $unwind: { path: '$quiz', preserveNullAndEmptyArrays: true } },
+        { $unwind: { path: '$event', preserveNullAndEmptyArrays: true } },
+      ])
+      .toArray();
+
+    // Add full URL for profile image
+    const userData = user.toObject();
+    if (userData.profileImage) {
+      userData.profileImage = `${req.protocol}://${req.get('host')}${userData.profileImage}`;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        user: userData,
+        participations: participations,
+      },
+    });
+  } catch (error) {
+    console.error('Get user details error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
 export const updateUserProfile = async (req: AuthRequest, res: Response) => {
   try {
     let updateData: any = { ...req.body };

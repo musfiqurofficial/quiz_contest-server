@@ -5,7 +5,6 @@ src
 .env.development.local
 .env.test.local
 .env.production.local
-uploads
 *.md
 .git
 .gitignore
@@ -13,3 +12,8 @@ uploads
 .eslintrc*
 .prettierrc*
 tsconfig.json
+*.zip
+*.rar
+.vscode
+.idea
+api
