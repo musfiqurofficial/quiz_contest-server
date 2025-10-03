@@ -7,9 +7,19 @@
 When creating a new Web Service on Render, use these settings:
 
 - **Environment**: Node
-- **Build Command**: `npm install && npm run build`
+- **Build Command**: `./build.sh` (or `npm install && npm run build`)
 - **Start Command**: `npm start`
-- **Publish Directory**: Leave empty (not needed for Node.js apps)
+- **Publish Directory**: **LEAVE COMPLETELY EMPTY** (this is crucial!)
+
+### ⚠️ IMPORTANT: Publish Directory Issue
+
+If you get the error "Publish directory npm run build does not exist!", it means Render is misinterpreting your build command as a publish directory. To fix this:
+
+1. **Publish Directory field must be completely empty**
+2. Use one of these build commands:
+   - `./build.sh` (recommended)
+   - `npm install && npm run build`
+   - `npm ci && npm run build`
 
 ### 2. Environment Variables
 

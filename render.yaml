@@ -10,3 +10,4 @@ services:
         value: production
       - key: PORT
         value: 10000
+    # No publish directory needed for Node.js apps
