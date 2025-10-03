@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { AuthRequest } from '../../middleware/auth.middleware';
 import { Participation } from './participation.model';
 import { questionImageUpload, getFileInfo } from '../../config/questionUpload';
 import { Event } from '../events/event.model';
@@ -31,11 +32,23 @@ export const createParticipation = async (req: Request, res: Response) => {
   }
 };
 
-export const getParticipations = async (req: Request, res: Response) => {
+export const getParticipations = async (req: AuthRequest, res: Response) => {
   try {
-    const participations = await Participation.find()
+    // Get user ID from authenticated request
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not authenticated',
+      });
+    }
+
+    // Filter participations by the authenticated user
+    const participations = await Participation.find({ studentId: userId })
       .populate('studentId', 'fullNameEnglish fullNameBangla contact')
       .populate('quizId');
+
     res.json({ success: true, data: participations });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
