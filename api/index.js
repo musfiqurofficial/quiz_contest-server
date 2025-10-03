@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const app = require('../dist/app');
 
 // Connect to MongoDB
 if (process.env.DATABASE_URL) {
@@ -12,6 +11,9 @@ if (process.env.DATABASE_URL) {
       console.error('Failed to connect to database:', err);
     });
 }
+
+// Import the Express app
+const app = require('../dist/app').default || require('../dist/app');
 
 // Export the Express app as a serverless function
 module.exports = app;
