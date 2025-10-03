@@ -33,7 +33,6 @@ if (!process.env.VERCEL) {
 // Export the app for Vercel
 export default app;
 
-// Handle unhandled rejections
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
