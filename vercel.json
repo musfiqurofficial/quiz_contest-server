@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "functions": {
-    "api/index.js": {
-      "runtime": "nodejs18.x"
+  "builds": [
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node"
     }
-  },
+  ],
   "routes": [
     {
       "src": "/(.*)",
@@ -13,5 +14,10 @@
   ],
   "env": {
     "NODE_ENV": "production"
+  },
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 30
+    }
   }
 }
