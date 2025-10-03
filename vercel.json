@@ -1,14 +1,14 @@
 {
   "version": 2,
   "functions": {
-    "dist/server.js": {
+    "api/index.js": {
       "includeFiles": "dist/**"
     }
   },
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "dist/server.js"
+      "dest": "api/index.js"
     }
   ],
   "env": {
