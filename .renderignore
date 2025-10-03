@@ -1,0 +1,12 @@
+node_modules
+src
+*.md
+.git
+.gitignore
+.eslintrc.json
+.prettierrc.json
+.eslintignore
+tsconfig.json
+vercel.json
+.vercelignore
+uploads
