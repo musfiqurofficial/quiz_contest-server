@@ -5,9 +5,9 @@ services:
     plan: free
     buildCommand: npm install && npm run build
     startCommand: npm start
+    # IMPORTANT: No publish directory for Node.js apps
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
-    # No publish directory needed for Node.js apps
