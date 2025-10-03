@@ -13,7 +13,21 @@ if (process.env.DATABASE_URL) {
 }
 
 // Import the Express app
-const app = require('../dist/app').default || require('../dist/app');
+let app;
+try {
+  app = require('../dist/app').default || require('../dist/app');
+} catch (error) {
+  console.error('Error importing app:', error);
+  // Fallback to a simple response
+  app = require('express')();
+  app.get('*', (req, res) => {
+    res.status(200).json({
+      message: 'Quiz Contest Backend API',
+      status: 'running',
+      error: 'App import failed',
+    });
+  });
+}
 
 // Export the Express app as a serverless function
 module.exports = app;
