@@ -11,32 +11,29 @@ if (config_1.default.database_url) {
     mongoose_1.default
         .connect(config_1.default.database_url)
         .then(() => {
-        console.log('Database connected successfully');
+        // Database connected successfully
     })
         .catch((err) => {
-        console.error('Failed to connect to database:', err);
+        // Failed to connect to database
     });
 }
 else {
-    console.log('No DATABASE_URL provided, skipping database connection');
+    // No DATABASE_URL provided, skipping database connection
 }
 // Start server (skip in Vercel production)
 if (!process.env.VERCEL) {
     const PORT = config_1.default.port || 5000;
     try {
         app_1.default.listen(PORT, () => {
-            console.log(`🚀 Server is running on port ${PORT}`);
-            console.log(`📱 API URL: http://localhost:${PORT}`);
-            console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
+            // Server is running
         });
     }
     catch (error) {
-        console.error('Failed to start server:', error);
+        // Failed to start server
     }
 }
 // Export the app for Vercel
 exports.default = app_1.default;
-// Handle unhandled rejections
 process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    // Unhandled Rejection
 });

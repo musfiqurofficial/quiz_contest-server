@@ -35,14 +35,7 @@ export const sendBulkSMS = async (req: AuthRequest, res: Response) => {
     }
 
     // TODO: Implement actual SMS/WhatsApp sending logic
-    // For now, just log the request and return success
-    console.log('Bulk message request:', {
-      adminId: req.user?.userId,
-      userIds,
-      message: message.substring(0, 50) + '...',
-      messageType,
-      timestamp: new Date().toISOString(),
-    });
+    // For now, just return success
 
     // Simulate processing time
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -69,7 +62,6 @@ export const sendBulkSMS = async (req: AuthRequest, res: Response) => {
 
     res.status(200).json(response);
   } catch (error) {
-    console.error('Bulk messaging error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to send bulk message',
@@ -109,7 +101,6 @@ export const getMessagingHistory = async (req: AuthRequest, res: Response) => {
       data: mockHistory,
     });
   } catch (error) {
-    console.error('Get messaging history error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch messaging history',
@@ -139,7 +130,6 @@ export const getMessagingStats = async (req: AuthRequest, res: Response) => {
       data: mockStats,
     });
   } catch (error) {
-    console.error('Get messaging stats error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch messaging statistics',

@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import cors from 'cors';
 import express, { Application } from 'express';
+import helmet from 'helmet';
 import globalErrorHandler from './app/middlewares/globalErrorhandler';
 import notFound from './app/middlewares/notFound';
 import router from './app/routes';
@@ -11,8 +12,12 @@ import path from 'path';
 
 const app: Application = express();
 
+// Security middleware
+app.use(helmet());
+
 //parsers
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Handle double slashes in URLs
 app.use((req, res, next) => {

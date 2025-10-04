@@ -106,7 +106,6 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
     }
     catch (error) {
-        console.error('নিবন্ধন ত্রুটি:', error);
         res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি' });
     }
 });
@@ -151,7 +150,6 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (error) {
-        console.error('Login error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });
@@ -167,7 +165,6 @@ const checkUserExists = (req, res) => __awaiter(void 0, void 0, void 0, function
         });
     }
     catch (error) {
-        console.error('Check user error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error',
@@ -198,7 +195,6 @@ const logoutUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
     }
     catch (error) {
-        console.error('Logout error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error during logout',
@@ -227,7 +223,6 @@ const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function*
         });
     }
     catch (error) {
-        console.error('প্রোফাইল পাওয়ার ত্রুটি:', error);
         res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি' });
     }
 });
@@ -253,7 +248,6 @@ const getAllUsersForAdmin = (req, res) => __awaiter(void 0, void 0, void 0, func
         });
     }
     catch (error) {
-        console.error('Get users error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });
@@ -308,7 +302,6 @@ const getUserDetailsWithParticipations = (req, res) => __awaiter(void 0, void 0,
         });
     }
     catch (error) {
-        console.error('Get user details error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });
@@ -387,7 +380,6 @@ const updateUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, functi
         });
     }
     catch (error) {
-        console.error('প্রোফাইল আপডেট ত্রুটি:', error);
         const message = process.env.NODE_ENV === 'production'
             ? 'সার্ভার ত্রুটি'
             : error.message || 'সার্ভার ত্রুটি';

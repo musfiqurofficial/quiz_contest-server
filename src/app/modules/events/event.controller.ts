@@ -38,7 +38,6 @@ export const getEventById = async (req: Request, res: Response) => {
 
     res.json({ success: true, data: event });
   } catch (error: any) {
-    console.error('Error loading event:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

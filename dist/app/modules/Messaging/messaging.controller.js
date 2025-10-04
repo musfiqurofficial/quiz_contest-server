@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getMessagingStats = exports.getMessagingHistory = exports.sendBulkSMS = void 0;
 // Placeholder function for sending bulk SMS
 const sendBulkSMS = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     try {
         const { userIds, message, messageType } = req.body;
         // Validate input
@@ -35,14 +34,7 @@ const sendBulkSMS = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             });
         }
         // TODO: Implement actual SMS/WhatsApp sending logic
-        // For now, just log the request and return success
-        console.log('Bulk message request:', {
-            adminId: (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId,
-            userIds,
-            message: message.substring(0, 50) + '...',
-            messageType,
-            timestamp: new Date().toISOString(),
-        });
+        // For now, just return success
         // Simulate processing time
         yield new Promise((resolve) => setTimeout(resolve, 1000));
         // Here you would integrate with:
@@ -66,7 +58,6 @@ const sendBulkSMS = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(200).json(response);
     }
     catch (error) {
-        console.error('Bulk messaging error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to send bulk message',
@@ -106,7 +97,6 @@ const getMessagingHistory = (req, res) => __awaiter(void 0, void 0, void 0, func
         });
     }
     catch (error) {
-        console.error('Get messaging history error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch messaging history',
@@ -136,7 +126,6 @@ const getMessagingStats = (req, res) => __awaiter(void 0, void 0, void 0, functi
         });
     }
     catch (error) {
-        console.error('Get messaging stats error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch messaging statistics',

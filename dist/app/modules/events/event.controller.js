@@ -51,7 +51,6 @@ const getEventById = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.json({ success: true, data: event });
     }
     catch (error) {
-        console.error('Error loading event:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });

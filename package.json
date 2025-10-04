@@ -1,7 +1,7 @@
 {
-  "name": "Hafejia-Travel-Tours",
+  "name": "quiz-contest-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Quiz Contest Backend API",
   "main": "./dist/server.js",
   "scripts": {
     "start": "node ./dist/server.js",
@@ -27,7 +27,6 @@
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "express-rate-limit": "^8.1.0",
-    "fs": "^0.0.1-security",
     "helmet": "^8.1.0",
     "http-status": "^1.7.3",
     "joi": "^18.0.1",

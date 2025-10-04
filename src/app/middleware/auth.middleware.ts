@@ -43,7 +43,7 @@ export const authenticate = async (
           await User.updateOne({ tokens: token }, { $pull: { tokens: token } });
         }
       } catch (dbError) {
-        console.error('Error removing expired token:', dbError);
+        // Error removing expired token
       }
       res.status(401).json({ success: false, message: 'Token expired' });
       return;

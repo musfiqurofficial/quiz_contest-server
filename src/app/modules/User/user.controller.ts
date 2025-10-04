@@ -122,7 +122,6 @@ export const registerUser = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error('নিবন্ধন ত্রুটি:', error);
     res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি' });
   }
 };
@@ -167,7 +166,6 @@ export const loginUser = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error('Login error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
@@ -182,7 +180,6 @@ export const checkUserExists = async (req: Request, res: Response) => {
       message: user ? 'User exists' : 'User not found',
     });
   } catch (error) {
-    console.error('Check user error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error',
@@ -210,7 +207,6 @@ export const logoutUser = async (req: AuthRequest, res: Response) => {
       message: 'Logout successful',
     });
   } catch (error) {
-    console.error('Logout error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error during logout',
@@ -238,7 +234,6 @@ export const getUserProfile = async (req: AuthRequest, res: Response) => {
       data: userData,
     });
   } catch (error) {
-    console.error('প্রোফাইল পাওয়ার ত্রুটি:', error);
     res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি' });
   }
 };
@@ -264,7 +259,6 @@ export const getAllUsersForAdmin = async (req: AuthRequest, res: Response) => {
       data: usersWithImages,
     });
   } catch (error) {
-    console.error('Get users error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
@@ -325,7 +319,6 @@ export const getUserDetailsWithParticipations = async (
       },
     });
   } catch (error) {
-    console.error('Get user details error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
@@ -414,7 +407,6 @@ export const updateUserProfile = async (req: AuthRequest, res: Response) => {
       data: userData,
     });
   } catch (error: any) {
-    console.error('প্রোফাইল আপডেট ত্রুটি:', error);
     const message =
       process.env.NODE_ENV === 'production'
         ? 'সার্ভার ত্রুটি'

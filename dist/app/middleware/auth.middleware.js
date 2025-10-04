@@ -47,7 +47,7 @@ const authenticate = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
                 }
             }
             catch (dbError) {
-                console.error('Error removing expired token:', dbError);
+                // Error removing expired token
             }
             res.status(401).json({ success: false, message: 'Token expired' });
             return;
