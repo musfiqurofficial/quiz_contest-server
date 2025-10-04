@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServiceTimeInstruction = void 0;
-const timeInstruction_modal_1 = require("./timeInstruction.modal");
+const timeInstruction_model_1 = require("./timeInstruction.model");
 const createTimeInstruction = (TimeInstructionData) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // const existingTimeInstruction = await TimeInstructionModal.findOne();
@@ -21,7 +21,7 @@ const createTimeInstruction = (TimeInstructionData) => __awaiter(void 0, void 0,
         //     data: existingTimeInstruction,
         //   };
         // }
-        const newTimeInstruction = yield timeInstruction_modal_1.TimeInstructionModal.create(TimeInstructionData);
+        const newTimeInstruction = yield timeInstruction_model_1.TimeInstructionModal.create(TimeInstructionData);
         return {
             success: true,
             message: 'TimeInstruction successfully created.',
@@ -37,20 +37,20 @@ const createTimeInstruction = (TimeInstructionData) => __awaiter(void 0, void 0,
     }
 });
 const findTimeInstructionById = (TimeInstructionId) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield timeInstruction_modal_1.TimeInstructionModal.findById(TimeInstructionId);
+    return yield timeInstruction_model_1.TimeInstructionModal.findById(TimeInstructionId);
 });
 const getAllTimeInstruction = () => __awaiter(void 0, void 0, void 0, function* () {
-    return yield timeInstruction_modal_1.TimeInstructionModal.find();
+    return yield timeInstruction_model_1.TimeInstructionModal.find();
 });
 const updateTimeInstructionById = (_id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield timeInstruction_modal_1.TimeInstructionModal.findByIdAndUpdate(_id, payload, {
+    const result = yield timeInstruction_model_1.TimeInstructionModal.findByIdAndUpdate(_id, payload, {
         new: true,
         runValidators: true,
     });
     return result;
 });
 const deleteTimeInstructionById = (TimeInstructionId) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield timeInstruction_modal_1.TimeInstructionModal.findByIdAndDelete(TimeInstructionId);
+    const result = yield timeInstruction_model_1.TimeInstructionModal.findByIdAndDelete(TimeInstructionId);
     return result;
 });
 exports.ServiceTimeInstruction = {

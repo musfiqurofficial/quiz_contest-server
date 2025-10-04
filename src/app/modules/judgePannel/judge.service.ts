@@ -1,5 +1,5 @@
 import type { IJudge } from './judge.interface';
-import { JudgeModel } from './judge.modal';
+import { JudgeModel } from './judge.model';
 
 const createNewJudge = async (JudgeData: IJudge) => {
   try {

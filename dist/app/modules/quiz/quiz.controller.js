@@ -10,10 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteQuiz = exports.updateQuiz = exports.getQuizzesByEventId = exports.getQuizById = exports.getQuizzes = exports.createQuiz = void 0;
-const quiz_modal_1 = require("./quiz.modal");
+const quiz_model_1 = require("./quiz.model");
 const createQuiz = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const quiz = yield quiz_modal_1.Quiz.create(req.body);
+        const quiz = yield quiz_model_1.Quiz.create(req.body);
         res.status(201).json({ success: true, data: quiz });
     }
     catch (error) {
@@ -24,7 +24,7 @@ exports.createQuiz = createQuiz;
 const getQuizzes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { populate } = req.query;
-        let query = quiz_modal_1.Quiz.find();
+        let query = quiz_model_1.Quiz.find();
         if (populate === 'eventId') {
             query = query.populate('eventId');
         }
@@ -40,13 +40,15 @@ const getQuizById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { id } = req.params;
         const { populate } = req.query;
-        let query = quiz_modal_1.Quiz.findById(id);
+        let query = quiz_model_1.Quiz.findById(id);
         if (populate === 'eventId') {
             query = query.populate('eventId');
         }
         const quiz = yield query;
         if (!quiz) {
-            return res.status(404).json({ success: false, message: 'Quiz not found' });
+            return res
+                .status(404)
+                .json({ success: false, message: 'Quiz not found' });
         }
         res.json({ success: true, data: quiz });
     }
@@ -59,7 +61,7 @@ const getQuizzesByEventId = (req, res) => __awaiter(void 0, void 0, void 0, func
     try {
         const { eventId } = req.params;
         const { populate } = req.query;
-        let query = quiz_modal_1.Quiz.find({ eventId });
+        let query = quiz_model_1.Quiz.find({ eventId });
         if (populate === 'eventId') {
             query = query.populate('eventId');
         }
@@ -74,9 +76,16 @@ exports.getQuizzesByEventId = getQuizzesByEventId;
 // Add updateQuiz function
 const updateQuiz = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const quiz = yield quiz_modal_1.Quiz.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true }).populate('questions').populate('eventId');
+        const quiz = yield quiz_model_1.Quiz.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true,
+        })
+            .populate('questions')
+            .populate('eventId');
         if (!quiz) {
-            return res.status(404).json({ success: false, message: 'Quiz not found' });
+            return res
+                .status(404)
+                .json({ success: false, message: 'Quiz not found' });
         }
         res.json({ success: true, data: quiz });
     }
@@ -88,9 +97,11 @@ exports.updateQuiz = updateQuiz;
 // Add deleteQuiz function
 const deleteQuiz = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const quiz = yield quiz_modal_1.Quiz.findByIdAndDelete(req.params.id);
+        const quiz = yield quiz_model_1.Quiz.findByIdAndDelete(req.params.id);
         if (!quiz) {
-            return res.status(404).json({ success: false, message: 'Quiz not found' });
+            return res
+                .status(404)
+                .json({ success: false, message: 'Quiz not found' });
         }
         res.json({ success: true, data: {} });
     }

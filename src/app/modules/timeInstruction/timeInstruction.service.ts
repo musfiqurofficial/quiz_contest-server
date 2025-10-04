@@ -1,5 +1,5 @@
 import type { IQuizTimelineAndInstructionsType } from './timeInstruction.interface';
-import { TimeInstructionModal } from './timeInstruction.modal';
+import { TimeInstructionModal } from './timeInstruction.model';
 
 const createTimeInstruction = async (
   TimeInstructionData: IQuizTimelineAndInstructionsType,

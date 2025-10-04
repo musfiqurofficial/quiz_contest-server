@@ -1,5 +1,5 @@
 import { IOffer } from './Offer.interface';
-import { Offer } from './Offer.modal';
+import { Offer } from './Offer.model';
 
 // const createOffer = async (OfferService: IOffer) => {
 //   return await Offer.create(OfferService);

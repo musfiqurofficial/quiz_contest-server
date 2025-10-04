@@ -10,13 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServiceOfFaQ = void 0;
-const faq_modal_1 = require("./faq.modal");
+const faq_model_1 = require("./faq.model");
 // const createFaQ = async (FaQService: IFaQ) => {
 //   return await FaQ.create(FaQService);
 // };
 const createFaQ = (FaQData) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const existingFaQ = yield faq_modal_1.FaQ.findOne();
+        const existingFaQ = yield faq_model_1.FaQ.findOne();
         if (existingFaQ) {
             return {
                 success: false,
@@ -24,7 +24,7 @@ const createFaQ = (FaQData) => __awaiter(void 0, void 0, void 0, function* () {
                 data: existingFaQ,
             };
         }
-        const newFaQ = yield faq_modal_1.FaQ.create(FaQData);
+        const newFaQ = yield faq_model_1.FaQ.create(FaQData);
         return {
             success: true,
             message: 'FaQ successfully created.',
@@ -40,10 +40,10 @@ const createFaQ = (FaQData) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 const findFaQById = (FaQId) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield faq_modal_1.FaQ.findById(FaQId);
+    return yield faq_model_1.FaQ.findById(FaQId);
 });
 const getAllFaQs = () => __awaiter(void 0, void 0, void 0, function* () {
-    return yield faq_modal_1.FaQ.find();
+    return yield faq_model_1.FaQ.find();
 });
 // const updateFaQById = async (_id: string, payload: Partial<IFaQ>) => {
 //   const result = await FaQ.findByIdAndUpdate(_id, payload, {
@@ -53,14 +53,14 @@ const getAllFaQs = () => __awaiter(void 0, void 0, void 0, function* () {
 //   return result;
 // };
 const updateFaQById = (_id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield faq_modal_1.FaQ.findByIdAndUpdate(_id, payload, {
+    const result = yield faq_model_1.FaQ.findByIdAndUpdate(_id, payload, {
         new: true,
         runValidators: true,
     });
     return result;
 });
 const deleteFaQById = (FaQId) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield faq_modal_1.FaQ.findByIdAndDelete(FaQId);
+    const result = yield faq_model_1.FaQ.findByIdAndDelete(FaQId);
     return result;
 });
 exports.ServiceOfFaQ = {

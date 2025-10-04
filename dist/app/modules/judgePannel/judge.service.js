@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServiceJudge = void 0;
-const judge_modal_1 = require("./judge.modal");
+const judge_model_1 = require("./judge.model");
 const createNewJudge = (JudgeData) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // const existingJudge = await JudgeModel.findOne();
@@ -21,7 +21,7 @@ const createNewJudge = (JudgeData) => __awaiter(void 0, void 0, void 0, function
         //     data: existingJudge,
         //   };
         // }
-        const newJudge = yield judge_modal_1.JudgeModel.create(JudgeData);
+        const newJudge = yield judge_model_1.JudgeModel.create(JudgeData);
         return {
             success: true,
             message: 'Judge successfully created.',
@@ -37,20 +37,20 @@ const createNewJudge = (JudgeData) => __awaiter(void 0, void 0, void 0, function
     }
 });
 const findJudgeById = (JudgeId) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield judge_modal_1.JudgeModel.findById(JudgeId);
+    return yield judge_model_1.JudgeModel.findById(JudgeId);
 });
 const getAllJudge = () => __awaiter(void 0, void 0, void 0, function* () {
-    return yield judge_modal_1.JudgeModel.find();
+    return yield judge_model_1.JudgeModel.find();
 });
 const updateJudgeById = (_id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield judge_modal_1.JudgeModel.findByIdAndUpdate(_id, payload, {
+    const result = yield judge_model_1.JudgeModel.findByIdAndUpdate(_id, payload, {
         new: true,
         runValidators: true,
     });
     return result;
 });
 const deleteJudgeById = (JudgeId) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield judge_modal_1.JudgeModel.findByIdAndDelete(JudgeId);
+    const result = yield judge_model_1.JudgeModel.findByIdAndDelete(JudgeId);
     return result;
 });
 exports.ServiceJudge = {

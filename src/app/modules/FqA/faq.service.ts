@@ -1,5 +1,5 @@
 import { IFaQ } from './faq.interface';
-import { FaQ } from './faq.modal';
+import { FaQ } from './faq.model';
 
 // const createFaQ = async (FaQService: IFaQ) => {
 //   return await FaQ.create(FaQService);
@@ -50,7 +50,6 @@ const getAllFaQs = async () => {
 // };
 
 const updateFaQById = async (_id: string, payload: Partial<IFaQ>) => {
-  
   const result = await FaQ.findByIdAndUpdate(_id, payload, {
     new: true,
     runValidators: true,
