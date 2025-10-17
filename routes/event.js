@@ -1,51 +1,18 @@
 const express = require("express");
 const router = express.Router();
 
+const eventController = require("../controllers/eventController");
 const { authenticate, requireAdmin } = require("../middleware/auth");
 
-// Get all events
-router.get("/", async (req, res) => {
-  try {
-    const Event = require("../models/Event");
-    const events = await Event.find({ status: "active" }).sort({
-      startDate: 1,
-    });
+// Public routes
+router.get("/", eventController.getEvents);
+router.get("/:id", eventController.getEventById);
+router.get("/:id/participants", eventController.getEventParticipants);
 
-    res.json({
-      success: true,
-      data: { events },
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch events",
-    });
-  }
-});
-
-// Get single event
-router.get("/:id", async (req, res) => {
-  try {
-    const Event = require("../models/Event");
-    const event = await Event.findById(req.params.id);
-
-    if (!event) {
-      return res.status(404).json({
-        success: false,
-        message: "Event not found",
-      });
-    }
-
-    res.json({
-      success: true,
-      data: { event },
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch event",
-    });
-  }
-});
+// Protected routes
+router.post("/", authenticate, requireAdmin, eventController.createEvent);
+router.put("/:id", authenticate, requireAdmin, eventController.updateEvent);
+router.delete("/:id", authenticate, requireAdmin, eventController.deleteEvent);
+router.post("/add-participant", authenticate, eventController.addParticipant);
 
 module.exports = router;

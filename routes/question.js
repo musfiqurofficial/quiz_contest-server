@@ -1,51 +1,41 @@
 const express = require("express");
 const router = express.Router();
 
+const questionController = require("../controllers/questionController");
 const { authenticate, requireAdmin } = require("../middleware/auth");
 
-// Get questions for a quiz
-router.get("/quiz/:quizId", authenticate, async (req, res) => {
-  try {
-    const Question = require("../models/Question");
-    const questions = await Question.find({
-      quiz: req.params.quizId,
-      status: "published",
-    }).sort({ order: 1 });
+// Public routes
+router.get("/", questionController.getQuestions);
+router.get("/quiz/:quizId", questionController.getQuestionsByQuiz);
+router.get("/type/:type", questionController.getQuestionsByType);
+router.post("/:questionId/submit-answer", questionController.submitAnswer);
+router.get("/:id", questionController.getQuestionById);
 
-    res.json({
-      success: true,
-      data: { questions },
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch questions",
-    });
-  }
-});
-
-// Create question (Admin only)
-router.post("/", authenticate, requireAdmin, async (req, res) => {
-  try {
-    const Question = require("../models/Question");
-    const question = new Question({
-      ...req.body,
-      createdBy: req.user._id,
-    });
-
-    await question.save();
-
-    res.status(201).json({
-      success: true,
-      message: "Question created successfully",
-      data: { question },
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to create question",
-    });
-  }
-});
+// Protected routes
+router.post("/", authenticate, requireAdmin, questionController.createQuestion);
+router.put(
+  "/:id",
+  authenticate,
+  requireAdmin,
+  questionController.updateQuestion
+);
+router.delete(
+  "/:id",
+  authenticate,
+  requireAdmin,
+  questionController.deleteQuestion
+);
+router.post(
+  "/bulk",
+  authenticate,
+  requireAdmin,
+  questionController.bulkCreateQuestions
+);
+router.delete(
+  "/bulk",
+  authenticate,
+  requireAdmin,
+  questionController.bulkDeleteQuestions
+);
 
 module.exports = router;

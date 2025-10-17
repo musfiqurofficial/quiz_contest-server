@@ -16,34 +16,15 @@ const register = async (req, res) => {
     }
 
     const {
-      fullNameBangla,
-      fullNameEnglish,
-      fatherName,
-      motherName,
-      dateOfBirth,
-      age,
-      gender,
-      union,
-      postOffice,
-      upazila,
-      district,
-      address,
-      grade,
-      institutionName,
-      institutionAddress,
-      rollId,
+      fullNameBangla = "নতুন ব্যবহারকারী",
+      fullNameEnglish = "New User",
       contact,
-      contactType,
-      parentContact,
-      whatsappNumber,
-      bloodGroup,
-      specialNeeds,
-      hasSmartphone,
-      internetUsage,
-      interests,
-      preferredSubjects,
-      futureGoals,
       password,
+      age = 18,
+      gender = "male",
+      address = "Not provided",
+      grade = "Not specified",
+      contactType = "phone",
     } = req.body;
 
     // Check if user already exists
@@ -59,35 +40,12 @@ const register = async (req, res) => {
     const user = new User({
       fullNameBangla,
       fullNameEnglish,
-      fatherName,
-      motherName,
-      dateOfBirth,
       age,
       gender,
-      union,
-      postOffice,
-      upazila,
-      district,
       address,
       grade,
-      institutionName,
-      institutionAddress,
-      rollId,
       contact,
       contactType,
-      parentContact,
-      whatsappNumber,
-      bloodGroup,
-      specialNeeds,
-      hasSmartphone,
-      internetUsage,
-      interests: Array.isArray(interests)
-        ? interests
-        : [interests].filter(Boolean),
-      preferredSubjects: Array.isArray(preferredSubjects)
-        ? preferredSubjects
-        : [preferredSubjects].filter(Boolean),
-      futureGoals,
       password,
     });
 
