@@ -62,6 +62,57 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("combined"));
 }
 
+// Database connection with caching for serverless
+let isConnected = false;
+
+const connectDB = async () => {
+  if (isConnected) {
+    console.log("Using existing database connection");
+    return;
+  }
+
+  try {
+    const mongoURI =
+      process.env.NODE_ENV === "test"
+        ? process.env.MONGODB_TEST_URI
+        : process.env.MONGODB_URI;
+
+    if (!mongoURI) {
+      throw new Error("MongoDB URI is not defined in environment variables");
+    }
+
+    // ✅ Fixed: Removed deprecated options and added serverless optimizations
+    await mongoose.connect(mongoURI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+
+    isConnected = mongoose.connection.readyState === 1;
+    console.log(
+      `MongoDB connected successfully in ${process.env.NODE_ENV || "development"} mode`
+    );
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+    isConnected = false;
+    throw error;
+  }
+};
+
+// Middleware to ensure database connection (BEFORE routes)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    res.status(500).json({
+      success: false,
+      message: "Database connection failed",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+});
+
 // Health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({
@@ -69,6 +120,7 @@ app.get("/health", (req, res) => {
     message: "Server is running",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
+    database: isConnected ? "connected" : "disconnected",
   });
 });
 
@@ -156,63 +208,47 @@ app.get("/favicon.ico", (req, res) => {
   res.status(204).end();
 });
 
-// Error handling middleware
+// Error handling middleware (MUST be last)
 app.use(notFound);
 app.use(errorHandler);
 
-// Database connection
-const connectDB = async () => {
-  try {
-    const mongoURI =
-      process.env.NODE_ENV === "test"
-        ? process.env.MONGODB_TEST_URI
-        : process.env.MONGODB_URI;
-
-    // ✅ Fixed: Removed deprecated options
-    await mongoose.connect(mongoURI);
-
-    console.log(
-      `MongoDB connected successfully in ${process.env.NODE_ENV} mode`
-    );
-  } catch (error) {
-    console.error("MongoDB connection error:", error);
-    process.exit(1);
-  }
-};
-
-// Start server
+// Start server only in non-serverless environment
 const PORT = process.env.PORT || 5000;
-const startServer = async () => {
-  await connectDB();
-  app.listen(PORT, () => {
-    console.log(
-      `🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`
-    );
-    console.log(`📊 Health check: http://localhost:${PORT}/health`);
-    console.log(`🔗 API Base URL: http://localhost:${PORT}/api`);
+if (process.env.VERCEL !== "1") {
+  const startServer = async () => {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(
+        `🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || "development"} mode`
+      );
+      console.log(`📊 Health check: http://localhost:${PORT}/health`);
+      console.log(`🔗 API Base URL: http://localhost:${PORT}/api`);
+    });
+  };
+
+  // Handle unhandled promise rejections
+  process.on("unhandledRejection", (err) => {
+    console.log("Unhandled Promise Rejection:", err.message);
+    process.exit(1);
   });
-};
 
-// Handle unhandled promise rejections
-process.on("unhandledRejection", (err) => {
-  console.log("Unhandled Promise Rejection:", err.message);
-  process.exit(1);
-});
-
-// Handle uncaught exceptions
-process.on("uncaughtException", (err) => {
-  console.log("Uncaught Exception:", err.message);
-  process.exit(1);
-});
-
-// Graceful shutdown
-process.on("SIGTERM", () => {
-  console.log("SIGTERM received. Shutting down gracefully...");
-  mongoose.connection.close(() => {
-    console.log("MongoDB connection closed.");
-    process.exit(0);
+  // Handle uncaught exceptions
+  process.on("uncaughtException", (err) => {
+    console.log("Uncaught Exception:", err.message);
+    process.exit(1);
   });
-});
 
-startServer();
+  // Graceful shutdown
+  process.on("SIGTERM", () => {
+    console.log("SIGTERM received. Shutting down gracefully...");
+    mongoose.connection.close(() => {
+      console.log("MongoDB connection closed.");
+      process.exit(0);
+    });
+  });
+
+  startServer();
+}
+
+// Export for Vercel serverless
 module.exports = app;
