@@ -1,6 +1,7 @@
 # ⚡ Quick Fix for Vercel Deployment Crash
 
 ## সমস্যা
+
 Vercel এ deploy করার পর "500: This Serverless Function has crashed" error আসছে।
 
 ## সমাধান ✅
@@ -8,10 +9,12 @@ Vercel এ deploy করার পর "500: This Serverless Function has crashed
 আমি নিচের changes করেছি:
 
 ### 1. `vercel.json` Updated
+
 - ✅ Added `builds` section with `@vercel/node`
 - ✅ Added `env` section for NODE_ENV
 
 ### 2. `server.js` Restructured
+
 - ✅ Database connection middleware routes এর **আগে** move করা হয়েছে
 - ✅ Connection caching add করা হয়েছে serverless এর জন্য
 - ✅ `VERCEL` environment variable check করে conditional server start
@@ -100,14 +103,17 @@ Deployment এর আগে:
 ### যদি এখনও crash করে:
 
 1. **Vercel Logs Check করুন:**
+
    - Dashboard → Deployments → Click on deployment → Functions tab
    - Console এ কি error দেখাচ্ছে?
 
 2. **Environment Variables Verify করুন:**
+
    - Settings → Environment Variables
    - সব variables সঠিকভাবে set করা আছে কিনা check করুন
 
 3. **Re-deploy করুন:**
+
    ```bash
    vercel --prod --force
    ```
@@ -118,12 +124,12 @@ Deployment এর আগে:
 
 ## পরিবর্তনের সারাংশ
 
-| File | Changes |
-|------|---------|
-| `vercel.json` | Added `builds` section, optimized routing |
-| `server.js` | Restructured middleware order, added connection caching |
-| `VERCEL_DEPLOYMENT.md` | Complete deployment guide |
-| `.gitignore` | Added Windows reserved device names |
+| File                   | Changes                                                 |
+| ---------------------- | ------------------------------------------------------- |
+| `vercel.json`          | Added `builds` section, optimized routing               |
+| `server.js`            | Restructured middleware order, added connection caching |
+| `VERCEL_DEPLOYMENT.md` | Complete deployment guide                               |
+| `.gitignore`           | Added Windows reserved device names                     |
 
 ## Next Steps
 
@@ -135,4 +141,3 @@ Deployment এর আগে:
 ---
 
 **Note:** Vercel serverless functions এ file uploads persist হয় না। Production এর জন্য AWS S3 অথবা Cloudinary use করা recommended।
-

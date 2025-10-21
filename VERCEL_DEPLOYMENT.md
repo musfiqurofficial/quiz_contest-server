@@ -90,11 +90,13 @@ Response আসা উচিত:
 #### Issue 1: "This Serverless Function has crashed"
 
 **Causes:**
+
 - Environment variables missing
 - MongoDB connection string ভুল
 - MongoDB IP whitelist করা নেই
 
 **Solution:**
+
 1. Vercel Dashboard → Settings → Environment Variables check করুন
 2. MongoDB Atlas Network Access check করুন
 3. Vercel Logs দেখুন: Dashboard → Deployments → Click deployment → Functions tab
@@ -102,11 +104,13 @@ Response আসা উচিত:
 #### Issue 2: "Database connection failed"
 
 **Causes:**
+
 - `MONGODB_URI` environment variable set করা নেই
 - MongoDB credentials ভুল
 - IP whitelist issue
 
 **Solution:**
+
 1. Environment variable সঠিকভাবে set করা আছে কিনা check করুন
 2. MongoDB Atlas এ `0.0.0.0/0` whitelist করুন
 3. Connection string এ username/password সঠিক আছে কিনা verify করুন
@@ -114,10 +118,12 @@ Response আসা উচিত:
 #### Issue 3: "500 Internal Server Error" কিন্তু logs এ error নেই
 
 **Causes:**
+
 - Server startup সময় error হচ্ছে
 - Environment variables load হচ্ছে না
 
 **Solution:**
+
 1. Vercel Dashboard → Deployments → Click on your deployment
 2. **Functions** tab এ যান
 3. Log output দেখুন
@@ -190,4 +196,3 @@ https://your-project-name.vercel.app
 - Vercel serverless functions এর **10 second execution timeout** আছে free plan এ
 - Database connection caching ব্যবহার করা হয়েছে performance এর জন্য
 - File uploads `/uploads` এ save হবে কিন্তু serverless environment এ persist করবে না - S3/Cloudinary use করা recommended
-

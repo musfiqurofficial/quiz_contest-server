@@ -89,7 +89,9 @@ const connectDB = async () => {
 
     isConnected = mongoose.connection.readyState === 1;
     console.log(
-      `MongoDB connected successfully in ${process.env.NODE_ENV || "development"} mode`
+      `MongoDB connected successfully in ${
+        process.env.NODE_ENV || "development"
+      } mode`
     );
   } catch (error) {
     console.error("MongoDB connection error:", error);
@@ -219,7 +221,9 @@ if (process.env.VERCEL !== "1") {
     await connectDB();
     app.listen(PORT, () => {
       console.log(
-        `🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || "development"} mode`
+        `🚀 Server running on port ${PORT} in ${
+          process.env.NODE_ENV || "development"
+        } mode`
       );
       console.log(`📊 Health check: http://localhost:${PORT}/health`);
       console.log(`🔗 API Base URL: http://localhost:${PORT}/api`);
