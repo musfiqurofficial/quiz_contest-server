@@ -6,10 +6,33 @@ const User = require("../models/User");
 // Create Participation
 const createParticipation = async (req, res) => {
   try {
-    const { user, quiz, startTime } = req.body;
+    const {
+      user,
+      studentId,
+      quiz,
+      quizId,
+      startTime,
+      answers,
+      totalScore,
+      status,
+    } = req.body;
+
+    // Support both user/studentId and quiz/quizId field names
+    const userId = user || studentId;
+    const quizIdValue = quiz || quizId;
+
+    if (!userId || !quizIdValue) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID and Quiz ID are required",
+      });
+    }
 
     // Check if user already participated in this quiz
-    const existingParticipation = await Participation.findOne({ user, quiz });
+    const existingParticipation = await Participation.findOne({
+      user: userId,
+      quiz: quizIdValue,
+    });
     if (existingParticipation) {
       return res.status(400).json({
         success: false,
@@ -18,7 +41,7 @@ const createParticipation = async (req, res) => {
     }
 
     // Get quiz details
-    const quizDetails = await Quiz.findById(quiz);
+    const quizDetails = await Quiz.findById(quizIdValue);
     if (!quizDetails) {
       return res.status(404).json({
         success: false,
@@ -27,19 +50,62 @@ const createParticipation = async (req, res) => {
     }
 
     // Get total questions count
-    const totalQuestions = await Question.countDocuments({ quiz });
+    const totalQuestions = await Question.countDocuments({ quiz: quizIdValue });
+
+    // Calculate results if answers are provided
+    let calculatedAnswers = [];
+    let correctAnswers = 0;
+    let wrongAnswers = 0;
+    let attemptedQuestions = 0;
+    let obtainedMarks = 0;
+
+    if (answers && Array.isArray(answers)) {
+      attemptedQuestions = answers.filter((a) => a.selectedOption).length;
+
+      for (const answer of answers) {
+        if (answer.isCorrect) {
+          correctAnswers++;
+        } else if (answer.selectedOption) {
+          wrongAnswers++;
+        }
+        obtainedMarks += answer.marksObtained || 0;
+
+        calculatedAnswers.push({
+          question: answer.questionId,
+          answer: answer.selectedOption || answer.participantAnswer,
+          isCorrect: answer.isCorrect || false,
+          marksObtained: answer.marksObtained || 0,
+          answeredAt: new Date(),
+        });
+      }
+    }
 
     const participation = await Participation.create({
-      user,
-      quiz,
+      user: userId,
+      quiz: quizIdValue,
       startTime: startTime || new Date(),
       totalQuestions,
+      answers: calculatedAnswers,
+      attemptedQuestions,
+      correctAnswers,
+      wrongAnswers,
+      totalMarks:
+        quizDetails.totalQuestions * (quizDetails.marksPerQuestion || 1),
+      obtainedMarks: totalScore || obtainedMarks,
+      status: status || "in-progress",
     });
+
+    // Populate the participation before sending
+    const populatedParticipation = await Participation.findById(
+      participation._id
+    )
+      .populate("user", "fullNameEnglish fullNameBangla contact role")
+      .populate("quiz", "title description duration totalQuestions");
 
     res.status(201).json({
       success: true,
       message: "Participation created successfully",
-      data: participation,
+      data: populatedParticipation,
     });
   } catch (error) {
     console.error("Create participation error:", error);
@@ -54,17 +120,19 @@ const createParticipation = async (req, res) => {
 // Get all Participations
 const getParticipations = async (req, res) => {
   try {
-    const { user, quiz, status, populate } = req.query;
+    const { user, studentId, quiz, quizId, status, populate } = req.query;
     let query = Participation.find();
 
-    // Filter by user if provided
-    if (user) {
-      query = query.where({ user });
+    // Filter by user if provided (support both user and studentId)
+    const userId = user || studentId;
+    if (userId) {
+      query = query.where({ user: userId });
     }
 
-    // Filter by quiz if provided
-    if (quiz) {
-      query = query.where({ quiz });
+    // Filter by quiz if provided (support both quiz and quizId)
+    const quizIdValue = quiz || quizId;
+    if (quizIdValue) {
+      query = query.where({ quiz: quizIdValue });
     }
 
     // Filter by status if provided
@@ -75,14 +143,23 @@ const getParticipations = async (req, res) => {
     // Populate user and quiz if requested
     if (populate) {
       const populateFields = populate.split(",");
-      if (populateFields.includes("user")) {
+      if (
+        populateFields.includes("user") ||
+        populateFields.includes("studentId")
+      ) {
         query = query.populate(
           "user",
-          "fullNameEnglish fullNameBangla contact"
+          "fullNameEnglish fullNameBangla contact role"
         );
       }
-      if (populateFields.includes("quiz")) {
-        query = query.populate("quiz", "title description duration");
+      if (
+        populateFields.includes("quiz") ||
+        populateFields.includes("quizId")
+      ) {
+        query = query.populate(
+          "quiz",
+          "title description duration totalQuestions eventId"
+        );
       }
     }
 
@@ -258,22 +335,31 @@ const getParticipationsByQuiz = async (req, res) => {
 // Check participation
 const checkParticipation = async (req, res) => {
   try {
-    const { user, quiz } = req.body;
+    const { user, studentId, quiz, quizId } = req.body;
 
-    if (!user || !quiz) {
+    // Support both user/studentId and quiz/quizId field names
+    const userId = user || studentId;
+    const quizIdValue = quiz || quizId;
+
+    if (!userId || !quizIdValue) {
       return res.status(400).json({
         success: false,
         message: "User ID and Quiz ID are required",
       });
     }
 
-    const participation = await Participation.findOne({ user, quiz });
+    const participation = await Participation.findOne({
+      user: userId,
+      quiz: quizIdValue,
+    });
 
     res.json({
       success: true,
       message: "Participation check completed",
       data: {
+        hasParticipated: !!participation,
         exists: !!participation,
+        status: participation ? participation.status : null,
         participation: participation || null,
       },
     });

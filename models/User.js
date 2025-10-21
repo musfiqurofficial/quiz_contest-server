@@ -4,6 +4,17 @@ const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema(
   {
+    // Role and Status
+    role: {
+      type: String,
+      enum: ["student", "admin"],
+      default: "student",
+    },
+    isSuperAdmin: {
+      type: Boolean,
+      default: false,
+    },
+
     // Basic Information
     fullNameBangla: {
       type: String,
@@ -35,7 +46,6 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       enum: ["male", "female", "other"],
-      required: [true, "Gender is required"],
     },
 
     // Address Information
@@ -143,7 +153,6 @@ const userSchema = new mongoose.Schema(
     // Profile Image
     profileImage: {
       type: String,
-      default: null,
     },
 
     // Authentication
@@ -157,17 +166,6 @@ const userSchema = new mongoose.Schema(
         type: String,
       },
     ],
-
-    // Role and Status
-    role: {
-      type: String,
-      enum: ["student", "admin", "super-admin"],
-      default: "student",
-    },
-    isSuperAdmin: {
-      type: Boolean,
-      default: false,
-    },
     isActive: {
       type: Boolean,
       default: true,

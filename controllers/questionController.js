@@ -1,14 +1,123 @@
 const Question = require("../models/Question");
 const Quiz = require("../models/Quiz");
 
+// Helper function to map frontend question type to backend type
+const mapQuestionTypeToBackend = (frontendType) => {
+  const typeMap = {
+    MCQ: "multiple-choice",
+    Short: "fill-in-the-blank",
+    Written: "essay",
+  };
+  return typeMap[frontendType] || frontendType;
+};
+
+// Helper function to map backend question type to frontend type
+const mapQuestionTypeToFrontend = (backendType) => {
+  const typeMap = {
+    "multiple-choice": "MCQ",
+    "fill-in-the-blank": "Short",
+    essay: "Written",
+    "true-false": "MCQ",
+  };
+  return typeMap[backendType] || backendType;
+};
+
+// Helper function to transform frontend data to backend format
+const transformFrontendToBackend = (data) => {
+  const transformed = { ...data };
+
+  // Map quizId to quiz
+  if (transformed.quizId) {
+    transformed.quiz = transformed.quizId;
+    delete transformed.quizId;
+  }
+
+  // Map text to questionText
+  if (transformed.text) {
+    transformed.questionText = transformed.text;
+    delete transformed.text;
+  }
+
+  // Map questionType to type
+  if (transformed.questionType) {
+    transformed.type = mapQuestionTypeToBackend(transformed.questionType);
+    delete transformed.questionType;
+  }
+
+  // For MCQ questions, transform options
+  if (transformed.type === "multiple-choice" && transformed.options) {
+    transformed.options = transformed.options.map((opt) => {
+      if (typeof opt === "string") {
+        return {
+          text: opt,
+          isCorrect: opt === transformed.correctAnswer,
+        };
+      }
+      return opt;
+    });
+  }
+
+  return transformed;
+};
+
+// Helper function to transform backend data to frontend format
+const transformBackendToFrontend = (data) => {
+  if (!data) return data;
+
+  const doc = data.toObject ? data.toObject() : data;
+  const transformed = { ...doc };
+
+  // Map quiz to quizId
+  if (transformed.quiz) {
+    transformed.quizId = transformed.quiz;
+    delete transformed.quiz;
+  }
+
+  // Map questionText to text
+  if (transformed.questionText) {
+    transformed.text = transformed.questionText;
+    delete transformed.questionText;
+  }
+
+  // Map type to questionType
+  if (transformed.type) {
+    transformed.questionType = mapQuestionTypeToFrontend(transformed.type);
+    delete transformed.type;
+  }
+
+  // For MCQ questions, extract options as strings if needed
+  if (transformed.options && Array.isArray(transformed.options)) {
+    transformed.options = transformed.options.map((opt) => {
+      if (typeof opt === "object" && opt.text) {
+        return opt.text;
+      }
+      return opt;
+    });
+  }
+
+  return transformed;
+};
+
 // Create Question
 const createQuestion = async (req, res) => {
   try {
-    const question = await Question.create(req.body);
+    // Transform frontend data to backend format
+    const questionData = transformFrontendToBackend(req.body);
+
+    // Add createdBy from authenticated user
+    if (req.user && req.user.userId) {
+      questionData.createdBy = req.user.userId;
+    }
+
+    const question = await Question.create(questionData);
+
+    // Transform response back to frontend format
+    const transformedQuestion = transformBackendToFrontend(question);
+
     res.status(201).json({
       success: true,
       message: "Question created successfully",
-      data: question,
+      data: transformedQuestion,
     });
   } catch (error) {
     console.error("Create question error:", error);
@@ -46,17 +155,20 @@ const getQuestions = async (req, res) => {
       query = query.where({ status });
     }
 
-    // Populate quiz if requested
-    if (populate === "quiz") {
+    // Populate quiz if requested (support both "quiz" and "quizId")
+    if (populate === "quiz" || populate === "quizId") {
       query = query.populate("quiz", "title description");
     }
 
     const questions = await query.sort({ order: 1, createdAt: -1 });
 
+    // Transform all questions to frontend format
+    const transformedQuestions = questions.map(transformBackendToFrontend);
+
     res.json({
       success: true,
       message: "Questions fetched successfully",
-      data: questions,
+      data: transformedQuestions,
     });
   } catch (error) {
     console.error("Get questions error:", error);
@@ -76,7 +188,7 @@ const getQuestionById = async (req, res) => {
 
     let query = Question.findById(id);
 
-    if (populate === "quiz") {
+    if (populate === "quiz" || populate === "quizId") {
       query = query.populate("quiz", "title description");
     }
 
@@ -89,10 +201,13 @@ const getQuestionById = async (req, res) => {
       });
     }
 
+    // Transform to frontend format
+    const transformedQuestion = transformBackendToFrontend(question);
+
     res.json({
       success: true,
       message: "Question fetched successfully",
-      data: question,
+      data: transformedQuestion,
     });
   } catch (error) {
     console.error("Get question error:", error);
@@ -108,7 +223,9 @@ const getQuestionById = async (req, res) => {
 const updateQuestion = async (req, res) => {
   try {
     const { id } = req.params;
-    const updateData = req.body;
+
+    // Transform frontend data to backend format
+    const updateData = transformFrontendToBackend(req.body);
 
     const question = await Question.findByIdAndUpdate(id, updateData, {
       new: true,
@@ -122,10 +239,13 @@ const updateQuestion = async (req, res) => {
       });
     }
 
+    // Transform to frontend format
+    const transformedQuestion = transformBackendToFrontend(question);
+
     res.json({
       success: true,
       message: "Question updated successfully",
-      data: question,
+      data: transformedQuestion,
     });
   } catch (error) {
     console.error("Update question error:", error);
@@ -173,16 +293,19 @@ const getQuestionsByQuiz = async (req, res) => {
 
     let query = Question.find({ quiz: quizId });
 
-    if (populate === "quiz") {
+    if (populate === "quiz" || populate === "quizId") {
       query = query.populate("quiz", "title description");
     }
 
     const questions = await query.sort({ order: 1 });
 
+    // Transform all questions to frontend format
+    const transformedQuestions = questions.map(transformBackendToFrontend);
+
     res.json({
       success: true,
       message: "Quiz questions fetched successfully",
-      data: questions,
+      data: transformedQuestions,
     });
   } catch (error) {
     console.error("Get questions by quiz error:", error);
@@ -200,22 +323,28 @@ const getQuestionsByType = async (req, res) => {
     const { type } = req.params;
     const { quiz, populate } = req.query;
 
-    let query = Question.find({ type });
+    // Map frontend type to backend type
+    const backendType = mapQuestionTypeToBackend(type);
+
+    let query = Question.find({ type: backendType });
 
     if (quiz) {
       query = query.where({ quiz });
     }
 
-    if (populate === "quiz") {
+    if (populate === "quiz" || populate === "quizId") {
       query = query.populate("quiz", "title description");
     }
 
     const questions = await query.sort({ order: 1 });
 
+    // Transform all questions to frontend format
+    const transformedQuestions = questions.map(transformBackendToFrontend);
+
     res.json({
       success: true,
       message: "Questions by type fetched successfully",
-      data: questions,
+      data: transformedQuestions,
     });
   } catch (error) {
     console.error("Get questions by type error:", error);
@@ -239,8 +368,13 @@ const bulkCreateQuestions = async (req, res) => {
       });
     }
 
+    // Transform all questions from frontend to backend format
+    const transformedQuestions = questions.map((q) =>
+      transformFrontendToBackend(q)
+    );
+
     // Validate each question
-    const validatedQuestions = questions.map((question, index) => {
+    const validatedQuestions = transformedQuestions.map((question, index) => {
       if (!question.quiz) {
         throw new Error(`Question ${index + 1}: quiz ID is required`);
       }
@@ -286,7 +420,7 @@ const bulkCreateQuestions = async (req, res) => {
           );
         }
         const hasCorrectOption = question.options.some(
-          (option) => option.isCorrect
+          (option) => option.isCorrect || option.text === question.correctAnswer
         );
         if (!hasCorrectOption) {
           throw new Error(
@@ -320,10 +454,13 @@ const bulkCreateQuestions = async (req, res) => {
     // Create all questions
     const createdQuestions = await Question.insertMany(validatedQuestions);
 
+    // Transform to frontend format
+    const transformedResults = createdQuestions.map(transformBackendToFrontend);
+
     res.status(201).json({
       success: true,
       message: `${createdQuestions.length} questions created successfully`,
-      data: createdQuestions,
+      data: transformedResults,
     });
   } catch (error) {
     console.error("Bulk create questions error:", error);

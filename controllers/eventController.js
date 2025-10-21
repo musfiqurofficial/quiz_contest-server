@@ -5,7 +5,16 @@ const User = require("../models/User");
 // Create Event
 const createEvent = async (req, res) => {
   try {
-    const event = await Event.create(req.body);
+    // Add createdBy from authenticated user if available
+    const eventData = {
+      ...req.body,
+    };
+
+    if (req.user && req.user.userId) {
+      eventData.createdBy = req.user.userId;
+    }
+
+    const event = await Event.create(eventData);
     res.status(201).json({
       success: true,
       message: "Event created successfully",

@@ -122,6 +122,12 @@ const quizSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+
+    // Event reference
+    eventId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Event",
+    },
   },
   {
     timestamps: true,

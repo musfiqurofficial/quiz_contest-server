@@ -19,6 +19,12 @@ router.put(
   requireAdmin,
   questionController.updateQuestion
 );
+router.patch(
+  "/:id",
+  authenticate,
+  requireAdmin,
+  questionController.updateQuestion
+);
 router.delete(
   "/:id",
   authenticate,

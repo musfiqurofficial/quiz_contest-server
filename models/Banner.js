@@ -15,17 +15,32 @@ const bannerSchema = new mongoose.Schema(
     image: {
       type: String,
       required: [true, "Banner image is required"],
-      trim: true,
     },
     buttonText: {
       type: String,
-      required: [true, "Button text is required"],
+      default: "Learn More",
+      trim: true,
+    },
+    buttonLink: {
+      type: String,
       trim: true,
     },
     status: {
       type: String,
-      enum: ["approved", "pending", "delete"],
-      default: "approved",
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
+    order: {
+      type: Number,
+      default: 0,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
   },
   {
@@ -34,6 +49,7 @@ const bannerSchema = new mongoose.Schema(
 );
 
 // Indexes
-bannerSchema.index({ status: 1 });
+bannerSchema.index({ status: 1, isActive: 1 });
+bannerSchema.index({ order: 1 });
 
 module.exports = mongoose.model("Banner", bannerSchema);

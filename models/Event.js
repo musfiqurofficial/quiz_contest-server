@@ -28,6 +28,10 @@ const eventSchema = new mongoose.Schema(
       enum: ["upcoming", "active", "completed", "cancelled"],
       default: "upcoming",
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
     maxParticipants: {
       type: Number,
       default: null,
@@ -48,6 +52,22 @@ const eventSchema = new mongoose.Schema(
       email: String,
       phone: String,
     },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    participants: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    quizzes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Quiz",
+      },
+    ],
   },
   {
     timestamps: true,
@@ -58,8 +78,8 @@ const eventSchema = new mongoose.Schema(
 eventSchema.index({ startDate: 1, endDate: 1 });
 eventSchema.index({ status: 1 });
 
-// Check if event is active
-eventSchema.methods.isActive = function () {
+// Check if event is currently active
+eventSchema.methods.isCurrentlyActive = function () {
   const now = new Date();
   return (
     this.status === "active" && now >= this.startDate && now <= this.endDate

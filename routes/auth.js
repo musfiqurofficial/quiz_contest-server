@@ -3,32 +3,29 @@ const { body } = require("express-validator");
 const router = express.Router();
 
 const authController = require("../controllers/authController");
-const { authenticate } = require("../middleware/auth");
+const { authenticate, requireRole } = require("../middleware/auth");
 const handleValidationErrors = require("../middleware/validation");
+const upload = require("../config/multer");
 
 // Validation rules
 const registerValidation = [
   body("fullNameBangla")
-    .optional()
     .notEmpty()
     .withMessage("Full name in Bangla is required"),
   body("fullNameEnglish")
-    .optional()
     .notEmpty()
     .withMessage("Full name in English is required"),
   body("age")
-    .optional()
     .isInt({ min: 5, max: 100 })
     .withMessage("Age must be between 5 and 100"),
   body("gender")
     .optional()
     .isIn(["male", "female", "other"])
     .withMessage("Gender must be male, female, or other"),
-  body("address").optional().notEmpty().withMessage("Address is required"),
-  body("grade").optional().notEmpty().withMessage("Grade/Class is required"),
+  body("address").notEmpty().withMessage("Address is required"),
+  body("grade").notEmpty().withMessage("Grade/Class is required"),
   body("contact").notEmpty().withMessage("Contact is required"),
   body("contactType")
-    .optional()
     .isIn(["phone", "email"])
     .withMessage("Contact type must be phone or email"),
   body("password")
@@ -50,9 +47,10 @@ const changePasswordValidation = [
     .withMessage("New password must be at least 6 characters long"),
 ];
 
-// Routes
+// Public routes
 router.post(
   "/register",
+  upload.single("profileImage"),
   registerValidation,
   handleValidationErrors,
   authController.register
@@ -63,15 +61,37 @@ router.post(
   handleValidationErrors,
   authController.login
 );
+router.post("/check-user", authController.checkUserExists);
+
+// Protected routes
 router.post("/logout", authenticate, authController.logout);
 router.get("/profile", authenticate, authController.getProfile);
-router.put("/profile", authenticate, authController.updateProfile);
+router.put(
+  "/profile",
+  upload.single("profileImage"),
+  authenticate,
+  authController.updateProfile
+);
 router.put(
   "/change-password",
   changePasswordValidation,
   handleValidationErrors,
   authenticate,
   authController.changePassword
+);
+
+// Admin only routes
+router.get(
+  "/admin/users",
+  authenticate,
+  requireRole(["admin"]),
+  authController.getAllUsersForAdmin
+);
+router.get(
+  "/admin/users/:userId",
+  authenticate,
+  requireRole(["admin"]),
+  authController.getUserDetailsWithParticipations
 );
 
 module.exports = router;

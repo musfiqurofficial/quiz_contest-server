@@ -4,7 +4,13 @@ const Question = require("../models/Question");
 // Create Quiz
 const createQuiz = async (req, res) => {
   try {
-    const quiz = await Quiz.create(req.body);
+    // Add createdBy from authenticated user
+    const quizData = {
+      ...req.body,
+      createdBy: req.user.userId,
+    };
+
+    const quiz = await Quiz.create(quizData);
     res.status(201).json({
       success: true,
       message: "Quiz created successfully",
@@ -41,6 +47,11 @@ const getQuizzes = async (req, res) => {
       query = query.populate("questions");
     }
 
+    // Populate eventId if requested
+    if (populate === "eventId") {
+      query = query.populate("eventId", "title description startDate endDate");
+    }
+
     const quizzes = await query.sort({ createdAt: -1 });
 
     res.json({
@@ -68,6 +79,10 @@ const getQuizById = async (req, res) => {
 
     if (populate === "questions") {
       query = query.populate("questions");
+    }
+
+    if (populate === "eventId") {
+      query = query.populate("eventId", "title description startDate endDate");
     }
 
     const quiz = await query;
@@ -165,6 +180,10 @@ const getQuizzesByEvent = async (req, res) => {
 
     if (populate === "questions") {
       query = query.populate("questions");
+    }
+
+    if (populate === "eventId") {
+      query = query.populate("eventId", "title description startDate endDate");
     }
 
     const quizzes = await query.sort({ createdAt: -1 });

@@ -32,7 +32,7 @@ const authenticate = async (req, res, next) => {
     }
 
     // Add user info to request
-    req.user = user;
+    req.user = { userId: decoded.userId, role: user.role };
     req.token = token;
 
     next();

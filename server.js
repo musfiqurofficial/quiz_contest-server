@@ -81,7 +81,7 @@ app.get("/api", (req, res) => {
     endpoints: {
       auth: "/api/auth",
       users: "/api/users",
-      quiz: "/api/quiz",
+      quizzes: "/api/quizzes",
       questions: "/api/questions",
       events: "/api/events",
       participation: "/api/participation",
@@ -105,7 +105,7 @@ app.get("/api/v1", (req, res) => {
     endpoints: {
       auth: "/api/v1/auth",
       users: "/api/v1/users",
-      quiz: "/api/v1/quiz",
+      quizzes: "/api/v1/quizzes",
       questions: "/api/v1/questions",
       events: "/api/v1/events",
       participation: "/api/v1/participation",
@@ -123,7 +123,7 @@ app.get("/api/v1", (req, res) => {
 // API routes (v1 - for backward compatibility)
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
-app.use("/api/v1/quiz", quizRoutes);
+app.use("/api/v1/quizzes", quizRoutes);
 app.use("/api/v1/questions", questionRoutes);
 app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/participation", participationRoutes);
@@ -137,7 +137,7 @@ app.use("/api/v1/messaging", messagingRoutes);
 // API routes (current version)
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/quiz", quizRoutes);
+app.use("/api/quizzes", quizRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/participation", participationRoutes);
