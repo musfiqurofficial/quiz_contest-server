@@ -115,6 +115,21 @@ app.use(async (req, res, next) => {
   }
 });
 
+// Root endpoint
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Hello NextVillage",
+    api: "Quiz Contest API",
+    version: "1.0.0",
+    endpoints: {
+      health: "/health",
+      api: "/api",
+      auth: "/api/auth",
+    }
+  });
+});
+
 // Health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({
