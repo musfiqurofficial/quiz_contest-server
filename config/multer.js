@@ -1,41 +1,10 @@
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
 
-// Ensure upload directories exist
-const uploadDirs = [
-  path.join(__dirname, "../uploads/profile-pics"),
-  path.join(__dirname, "../uploads/question-images"),
-  path.join(__dirname, "../uploads/question-files"),
-];
-
-uploadDirs.forEach((dir) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-});
-
-// Configure storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    let uploadPath;
-    if (file.fieldname === "profileImage") {
-      uploadPath = path.join(__dirname, "../uploads/profile-pics");
-    } else if (file.fieldname === "questionImage") {
-      uploadPath = path.join(__dirname, "../uploads/question-images");
-    } else if (file.fieldname === "questionFile") {
-      uploadPath = path.join(__dirname, "../uploads/question-files");
-    } else {
-      uploadPath = path.join(__dirname, "../uploads");
-    }
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, file.fieldname + "-" + uniqueSuffix + ext);
-  },
-});
+// Use memory storage for Vercel serverless deployment
+// Files will be stored in memory as Buffer objects
+// For production, integrate with cloud storage (Cloudinary, AWS S3, Vercel Blob, etc.)
+const storage = multer.memoryStorage();
 
 // File filter
 const fileFilter = (req, file, cb) => {

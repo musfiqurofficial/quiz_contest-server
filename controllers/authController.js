@@ -70,7 +70,14 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 12);
     let profileImagePath;
     if (req.file) {
-      profileImagePath = `/uploads/profile-pics/${req.file.filename}`;
+      // For memory storage (Vercel), generate filename from buffer
+      // Note: Files won't persist on serverless. Use cloud storage (Cloudinary/S3) for production
+      const filename =
+        req.file.filename ||
+        `profileImage-${Date.now()}-${Math.round(
+          Math.random() * 1e9
+        )}${path.extname(req.file.originalname || ".jpg")}`;
+      profileImagePath = `/uploads/profile-pics/${filename}`;
     }
 
     // Create new user
@@ -342,7 +349,13 @@ const updateProfile = async (req, res) => {
     delete updateData.isActive;
     // Handle profile image if uploaded
     if (req.file) {
-      updateData.profileImage = `/uploads/profile-pics/${req.file.filename}`;
+      // For memory storage (Vercel), generate filename from buffer
+      const filename =
+        req.file.filename ||
+        `profileImage-${Date.now()}-${Math.round(
+          Math.random() * 1e9
+        )}${path.extname(req.file.originalname || ".jpg")}`;
+      updateData.profileImage = `/uploads/profile-pics/${filename}`;
 
       // Delete old image if exists
       const existingUser = await User.findById(req.user?.userId).select(
